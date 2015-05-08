@@ -1,6 +1,6 @@
 {
   "name": "ndarray-householder-qr",
-  "version": "1.0.1",
+  "version": "0.0.1",
   "description": "Modified Gram-Schmidt Algorithm for QR Factorization",
   "main": "index.js",
   "author": "Ricky Reusser",
@@ -29,10 +29,10 @@
     "ndarray-fill": "^1.0.1",
     "ndarray-ops": "^1.2.2",
     "ndarray-scratch": "^1.1.1",
-    "ndarray-tests": "^1.0.1",
     "ndgemm": "0.0.0"
   },
   "dependencies": {
-    "ndarray-blas-level1": "^1.0.0"
+    "ndarray-blas-level1": "^1.0.0",
+    "ndarray-tests": "^1.1.0"
   }
 }
