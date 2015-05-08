@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/scijs/ndarray-householder-qr.svg?branch=1.0.0)](https://travis-ci.org/scijs/ndarray-householder-qr) [![npm version](https://badge.fury.io/js/ndarray-householder-qr.svg)](http://badge.fury.io/js/ndarray-householder-qr)
 
-A module for calculating the in-place [QR decomposition of a matrix](http://en.wikipedia.org/wiki/QR_decomposition) of ndarrays using Householder triangularization
+A module for calculating the in-place [QR decomposition](http://en.wikipedia.org/wiki/QR_decomposition) of an ndarray using Householder triangularization
 
 ## Introduction
 
