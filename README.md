@@ -6,7 +6,7 @@ A module for calculating the in-place [QR decomposition of a matrix](http://en.w
 
 ## Introduction
 
-The algorithm is the Householder QR Factorization algorithm as found on p. 58 of Trefethen and Bau's [Numerical Linear Algebra](http://www.amazon.com/Numerical-Linear-Algebra-Lloyd-Trefethen/dp/0898713617). In pseudocode, the algorithm is:
+The algorithm is the Householder QR Factorization algorithm as found on p. 73 of Trefethen and Bau's [Numerical Linear Algebra](http://www.amazon.com/Numerical-Linear-Algebra-Lloyd-Trefethen/dp/0898713617). In pseudocode, the algorithm is:
 
 ```
 for k = 1 to n
