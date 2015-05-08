@@ -1,7 +1,6 @@
 'use strict';
 
-var blas = require('ndarray-blas-level1'),
-    show = require('ndarray-show');
+var blas = require('ndarray-blas-level1');
 
 var triangularize = function triangularize( A, v ) {
   var i,k,n,m;
