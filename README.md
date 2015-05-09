@@ -78,8 +78,5 @@ Use the previously-calculated triangularization to find the vector x that minimi
 - `x` is the output vector of length n.
 
 
-#####
-
-
 ## Credits
 (c) 2015 Ricky Reusser. MIT License

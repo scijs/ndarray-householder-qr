@@ -4,7 +4,7 @@ var blas = require('ndarray-blas-level1'),
     trsv = require('ndarray-blas-trsv'),
     pool = require('ndarray-scratch');
 
-var show = require('ndarray-show');
+//var show = require('ndarray-show');
 
 var triangularize = function triangularize( A, v ) {
   var i,k,n,m;
