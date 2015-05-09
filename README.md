@@ -16,6 +16,41 @@ for k = 1 to n
   A[k:m,k:n] = A[k:m,k:n] - 2 v_k (v_k^* A[k:m,k:n])
 ```
 
+## Example
+
+A straightforward example of the usefulness of QR factorization is the solution of least squares problems. To fit the model `y = a0 * x + a1` to the data points `[x1,y1] = [0,1]`, `[x2,y2] = [1,2]`, `[x3,y3] = [2,3]`: 
+
+```javascript
+var qr = require('ndarray-householder-qr'),
+    vander = require('ndarray-vandermonde'),
+    
+    m = 3,
+    n = 2,
+
+    x = ndarray([0,1,2]),   // independent variable
+    y = ndarray([1,2,3]),   // data points
+    a = ndarray([0,0])      // unknown model parameters
+
+    v = qr.workVector(m,n),
+    A = vander(x,n);
+
+qr.triangularize( A, v );
+qr.solve( A, v, y, a );
+
+// result: a = ndarray([ 1, 1 ]) --> y = 1 * x + 1
+```
+
+After this calculation, the factorization can be reused to solve for other inputs:
+
+```javascript
+var moreData = ndarray([2,3,4]);
+
+qr.solve( A, v, moreData, a );
+
+// result: a = ndarray([ 2, 1 ]) --> y = 1 * x + 2
+```
+
+
 ## Usage
 
 ##### `triangularize( A, v )`
@@ -35,9 +70,13 @@ Given a series of Householder reflectors, construct the matrix Q by applying the
 **Incomplete**
 Compute the in-place QR factorization of A, storing R in A and outputting Q in Q.
 
-##### `solve( A, b )`
-**Incomplete**
-Compute the in-place QR factorization of A and compute A^-1 b = x, storing the result in the original vector b.
+##### `solve( R, v, b, x )`
+Use the previously-calculated triangularization to find the vector x that minimizes the L-2 norm of (Ax - b). Note that the vector b is modified in the process.
+- `R` is an upper-triangular matrix calculated in the `triangularize` step. The dimensions must be at least n x n, so it's fine if the in-place factorized m x n matrix A is used.
+- `v` is the work vector that stores the householder reflectors.
+- `b` is the input vector of length m.
+- `x` is the output vector of length n.
+
 
 #####
 

@@ -1,6 +1,6 @@
 {
   "name": "ndarray-householder-qr",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Householder triangularization for QR Factorization of ndarrays",
   "main": "index.js",
   "author": "Ricky Reusser",

@@ -4,7 +4,7 @@ var blas = require('ndarray-blas-level1'),
     trsv = require('ndarray-blas-trsv'),
     pool = require('ndarray-scratch');
 
-//var show = require('ndarray-show');
+var show = require('ndarray-show');
 
 var triangularize = function triangularize( A, v ) {
   var i,k,n,m;
@@ -24,21 +24,15 @@ var triangularize = function triangularize( A, v ) {
     throw new TypeError('triangularize():: v must be a vector of length >= m*n-n*(n-1)/2 given A is a matrix of size m x n.');
   }
 
-  var vlo, x0, sgn, x, nrm, Akmkn, alpha;
+  var vlo, x0, sgn, x, nrm, Akmkn, alpha, Akmi;
 
   for( vlo=0, k=0; k<n; k++ ) {
 
-    //console.log('A = \n' + show(A.transpose(1,0)));
     // Get this section of the packed output array:
     x = v.lo(vlo).hi(m-k);
 
-    //console.log('k=',k);
-
     // v = A[k:m,k]
     blas.copy( A.pick(null,k).lo(k), x );
-
-    //console.log('A[k:m,k] = ',show(A.pick(null,k)));
-    //console.log('x=',show(x))
 
     // vk = sign(x1) ||x||_2 e1 + x
     nrm = blas.nrm2(x);
@@ -51,19 +45,15 @@ var triangularize = function triangularize( A, v ) {
     if( nrm === 0 ) return false;
     blas.scal( 1/nrm, x);
 
-    //console.log('v[' + k + '] = '+show(x));
-
     // A[k:m,k:n] = A[k:n,k:n] - 2 * vk * (vk^* * A[k:m,k:n])
     
     // Compute alpha = -2 * vk^* * A[k:m,k:n]:
     Akmkn = A.lo(k,k);
-    //console.log(show(Akmkn.transpose(1,0)));
-
 
     for(i=0; i<n-k; i++) {
-      alpha = - 2 * blas.dot(x, Akmkn.pick(null,i));
-      //console.log('alpha = ',alpha * -0.5);
-      blas.axpy(alpha, x, Akmkn.pick(null,i));
+      Akmi = Akmkn.pick(null,i);
+      alpha = - 2 * blas.dot(x, Akmi);
+      blas.axpy(alpha, x, Akmi);
     }
 
     // Increment the current position in the packed output vector v:
@@ -136,39 +126,22 @@ var workVector = function(m,n,dtype) {
   return pool.zeros([m*n-n*(n-1)/2],dtype);
 };
 
-var solve = function( A, b, x ) {
+var solve = function( R, v, b, x ) {
+  var m,n;
 
-  var m,n,v;
-
-  if( A.dimension !== 2 ) {
+  if( R.dimension !== 2 ) {
     throw new TypeError('triangularize():: dimension of input matrix must be 2.');
   }
 
-  m = A.shape[0];
-  n = A.shape[1];
-
-  v = workVector(m,n);
-
-  console.log('A=\n'+show(A.transpose(1,0)));
-
-  triangularize(A,v);
-
-  console.log('A=\n'+show(A.transpose(1,0)));
-  console.log('v=\n'+show(v));
+  m = R.shape[0];
+  n = R.shape[1];
 
   multiplyByQinv( v, n, b );
 
-  console.log('x=\n'+show(b));
-
-  var Asq = A.lo(0,0).hi(n,n)
-
-  console.log('Asq=\n'+show(Asq.transpose(1,0)));
-
   blas.copy(b.hi(n),x);
-  trsv( Asq, x );
+  trsv( R.lo(0,0).hi(n,n), x );
 
-  console.log('x=',show(x));
-
+  return true;
 };
 
 
