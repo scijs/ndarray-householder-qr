@@ -3,93 +3,80 @@
 var householder = require('../index.js'),
     assert = require('chai').assert,
     ndarray = require('ndarray'),
-    pool = require('ndarray-scratch'),
     gemm = require("ndgemm"),
+    blas2 = require('ndarray-blas-level2'),
     ops = require('ndarray-ops'),
     show = require('ndarray-show'),
     ndtest = require('ndarray-tests'),
-    fill = require('ndarray-fill');
+    fill = require('ndarray-fill'),
+    pool = require('ndarray-scratch'),
+    vander = require('ndarray-vandermonde');
 
 
-describe("triangularize()", function() {
+describe("Householder QR", function() {
 
-  var m,n,A,v;
-
-  beforeEach(function() {
-    m=7;
-    n=4;
-    A = pool.zeros([m,n],'float64');
-    v = pool.zeros([m*n-n*(n-1)/2],'float64');
-
-    fill(A,function(i,j) { return Math.sqrt(2+i+j); });
-  });
-
-  it('returns a triangularized matrix in place of A',function() {
-    householder.triangularize(A,v);
-    assert( ndtest.matrixIsUpperTriangular(A,1e-8) );
-  });
-
-});
-
-describe("multByQinv()", function() {
-
-  var m,n,A,v,b;
+  var m,n,A,v,b,x,A0;
 
   beforeEach(function() {
-    m=7;
-    n=4;
-    A = pool.zeros([m,n],'float64');
-    v = pool.zeros([m*n-n*(n-1)/2],'float64');
-    b = ndarray([1,2,3,4,5,6,7]);
-
-    fill(A,function(i,j) { return Math.sqrt(2+i+j); });
+    m=3;
+    n=2;
+    // I sat down and worked this example by hand, so I'm pretty confident in
+    // the numbers as long as they follow the algorithm....
+    A0 = ndarray(new Float64Array([1,0,1,1,1,2]), [m,n])
+    A = ndarray(new Float64Array([1,0,1,1,1,2]), [m,n])
+    v = householder.workVector(m,n);
+    b = ndarray([1,2,3]);
+    x = pool.zeros([n])
   });
 
-  it('succeeds',function() {
-    householder.triangularize(A,v);
-    assert( householder.multByQinv(v,n,b) );
+  describe("triangularize",function() {
+    it('calculates the correct Householder reflectors',function() {
+      householder.triangularize(A,v);
+      var vExpected = ndarray([0.888, 0.325, 0.325, 0.793, 0.609])
+      assert( ndtest.approximatelyEqual( vExpected, v, 1e-3 ) );
+    });
+
+    it('R is upper-triangular',function() {
+      householder.triangularize(A,v);
+      assert( ndtest.matrixIsUpperTriangular(A,1e-8) );
+    });
+
+    it('calculates the correct R matrix',function() {
+      householder.triangularize(A,v);
+      var RExpected = ndarray([ -1.732, -1.732, 0, -1.414, 0, 0],[3,2])
+      assert( ndtest.approximatelyEqual( RExpected, A, 1e-3 ) );
+    });
+
   });
 
-});
 
-describe("multByQ()", function() {
+  xdescribe("multiplyByQinv()", function() {
 
-  var m,n,A,v,b;
+    it('succeeds',function() {
+      householder.triangularize(A,v);
+      assert( householder.multiplyByQinv(v,b,x) );
+    });
 
-  beforeEach(function() {
-    m=7;
-    n=4;
-    A = pool.zeros([m,n],'float64');
-    v = pool.zeros([m*n-n*(n-1)/2],'float64');
-    b = ndarray([1,2,3,4,5,6,7]);
-
-    fill(A,function(i,j) { return Math.sqrt(2+i+j); });
   });
 
-  it('succeeds',function() {
-    householder.triangularize(A,v);
-    assert( householder.multByQ(v,n,b) );
+  xdescribe("multiplyByQ()", function() {
+
+    it('succeeds',function() {
+      householder.triangularize(A,v);
+      assert( householder.multiplyByQ(v,x,b) );
+    });
+
   });
 
-});
+  xdescribe("solve()", function() {
 
-describe("constructQ()", function() {
+    it('succeeds',function() {
+      householder.solve(A,b,x);
 
-  var m,n,A,v,b;
+      blas2.gemv(1, A0, x, 0, b);
+      console.log('reconstruct=',show(b));
+    });
 
-  beforeEach(function() {
-    m=7;
-    n=4;
-    A = pool.zeros([m,n],'float64');
-    v = pool.zeros([m*n-n*(n-1)/2],'float64');
-    b = ndarray([1,2,3,4,5,6,7]);
-
-    fill(A,function(i,j) { return Math.sqrt(2+i+j); });
-  });
-
-  it('succeeds',function() {
-    householder.triangularize(A,v);
-    assert( householder.multByQ(v,n,b) );
   });
 
 });
