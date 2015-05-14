@@ -1,6 +1,6 @@
 'use strict';
 
-var householder = require('../index.js'),
+var householder = require('../lib'),
     assert = require('chai').assert,
     ndarray = require('ndarray'),
     gemm = require("ndgemm"),
@@ -27,9 +27,14 @@ describe("Householder QR", function() {
 
     A0 = vander(x,2);
     A = vander(x,2);
-    v = householder.workVector(m,n);
+    v = pool.zeros([householder.workVectorLength(m,n)]);
     b = ndarray([1,2,3]);
     y = pool.zeros([n])
+  });
+
+  afterEach(function() {
+    pool.free(v);
+    pool.free(y);
   });
 
   describe("triangularize",function() {
@@ -37,6 +42,7 @@ describe("Householder QR", function() {
       var vExpected = ndarray([0.888, 0.325, 0.325, 0.793, 0.609])
 
       householder.triangularize(A,v);
+      console.log(show(A.transpose(1,0)));
       assert( ndtest.approximatelyEqual( vExpected, v, 1e-3 ) );
     });
 

@@ -31,7 +31,7 @@ var qr = require('ndarray-householder-qr'),
     y = ndarray([1,2,3]),   // data points
     a = ndarray([0,0])      // unknown model parameters
 
-    v = qr.workVector(m,n),
+    v = pool.zeros([qr.workVectorLength(m,n)]),
     A = vander(x,n);
 
 qr.triangularize( A, v );
@@ -55,6 +55,9 @@ qr.solve( A, v, moreData, a );
 
 ##### `triangularize( A, v )`
 Computes the in-place triangularization of A (which is then R), returning a sequence of packed Householder reflectors in v. There shouldn't be too many cases where you need to use v directly since the magic of the Householder QR factorization is that you can implicitly calculate both Q' * b and Q * x without ever explicitly construcing Q. v must be a one-dimensional vector with length at least `m*n-n*(n-1)/2`.
+
+##### `workVectorLength(m,n)`
+Returns the integer size of the required work vector to go along with m x n input matrix A. It's up to you to allocate a one-dimensional ndarray with this size and pass it to `triangularize`. This allows the Householder reflectors to be packed tightly without requiring as much as twice the required memory
 
 ##### `multByQ( v, n, x )`
 Compute the product Q * x in-place, replacing x with Q * x. v is the result of the Householder triangularization, n is the width of the original matrix.
