@@ -16,6 +16,8 @@ for k = 1 to n
   A[k:m,k:n] = A[k:m,k:n] - 2 v_k (v_k^* A[k:m,k:n])
 ```
 
+The specific implementation is based on the pseudocode from Walter Gander's [Algorithms for the QR-Decomposition](http://www.inf.ethz.ch/personal/gander/papers/qrneu.pdf). This algorithm computes both R and the Householder reflectors in place, storing R in the upper-triangular portion of A, the diagonal of R in a separate vector and the Householder reflectors in the columns of A. To eliminate unnecessary operations, the Householder reflectors are normalized so that norm(v) = sqrt(2).
+
 ## Example
 
 A straightforward example of the usefulness of QR factorization is the solution of least squares problems. To fit the model `y = a0 * x + a1` to the data points `[x1,y1] = [0,1]`, `[x2,y2] = [1,2]`, `[x3,y3] = [2,3]`: 
