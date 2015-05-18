@@ -58,15 +58,13 @@ qr.solve( A, v, y2 );
 Computes the in-place triangularization of `A`, returning the Householder reflectors in the lower-triangular portion of `A` (including the diagonal) and `R` in the upper-triangular portion of `A` (excluding diagonal) with the diagonal of `R` stored in `d`. `d` must be a one-dimensional vector with length at least `n`.
 
 ##### `multByQ( A, x )`
-**Incomplete**
-Compute the product Q * x in-place, replacing x with Q * x. v is the result of the Householder triangularization, n is the width of the original matrix.
+Compute the product Q * x in-place, replacing x with Q * x. `A` is the in-place factored matrix.
 
 ##### `multByQinv( A, x )`
-`A` is the in-place triangularized matrix. Compute the product `Q^-1 * x` in-place, replacing x with `Q^-1 * x`. Since the product is shorter than `x` for m > n, the entries of `x` from n+1 to m will be zero.
+`A` is the in-place factored matrix. Compute the product `Q^-1 * x` in-place, replacing x with `Q^-1 * x`. Since the product is shorter than `x` for m > n, the entries of `x` from n+1 to m will be zero.
 
-##### `constructQ( A )`
-**Incomplete**
-Given a series of Householder reflectors, construct the matrix Q by applying the reflectors to a sequence of unit vectors.
+##### `constructQ( A, Q )`
+Given the in-place factored matrix A (diagonal not necessary), construct the matrix Q by applying the reflectors to a sequence of unit vectors. The dimensions of Q must be between m x n and m x m. When the dimensions of Q are m x n, Q corresponds to the Reduced QR Factorization. When the dimensions are m x m, Q corresponds to the Full QR Factorization.
 
 ##### `factor( A, Q )`
 **Incomplete**
@@ -74,7 +72,7 @@ Compute the in-place QR factorization of A, storing R in A and outputting Q in Q
 
 ##### `solve( A, d, x )`
 Use the previously-calculated triangularization to find the vector x that minimizes the L-2 norm of (Ax - b). Note that the vector b is modified in the process.
-- `A` is the in-place triangularized matrix computed by `triangularize`
+- `A` is the in-place factored matrix computed by `triangularize`
 - `d` is the diagonal of `R` computed by `triangularize`
 - `x` is the input vector of length m. The answer is computed in-place in the first n entries of `x`. The remaining entries are zero.
 
