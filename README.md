@@ -29,43 +29,40 @@ var qr = require('ndarray-householder-qr'),
 
     x = ndarray([0,1,2]),   // independent variable
     y = ndarray([1,2,3]),   // data points
-    a = ndarray([0,0])      // unknown model parameters
 
-    v = pool.zeros([qr.workVectorLength(m,n)]),
+    d = pool.zeros([n]),
     A = vander(x,n);
 
-qr.triangularize( A, v );
-qr.solve( A, v, y, a );
+qr.triangularize( A, d );
+qr.solve( A, d, y );
 
-// result: a = ndarray([ 1, 1 ]) --> y = 1 * x + 1
+// result: y = ndarray([ 1, 1, 0 ]) --> y = 1 * x + 1
 ```
 
 After this calculation, the factorization can be reused to solve for other inputs:
 
 ```javascript
-var moreData = ndarray([2,3,4]);
+var y2 = ndarray([2,3,4]);
 
-qr.solve( A, v, moreData, a );
+qr.solve( A, v, y2 );
 
-// result: a = ndarray([ 2, 1 ]) --> y = 1 * x + 2
+// result: y = ndarray([ 2, 1, 0 ]) --> y = 1 * x + 2
 ```
 
 
 ## Usage
 
-##### `triangularize( A, v )`
-Computes the in-place triangularization of A (which is then R), returning a sequence of packed Householder reflectors in v. There shouldn't be too many cases where you need to use v directly since the magic of the Householder QR factorization is that you can implicitly calculate both Q' * b and Q * x without ever explicitly construcing Q. v must be a one-dimensional vector with length at least `m*n-n*(n-1)/2`.
+##### `triangularize( A, d )`
+Computes the in-place triangularization of `A`, returning the Householder reflectors in the lower-triangular portion of `A` (including the diagonal) and `R` in the upper-triangular portion of `A` (excluding diagonal) with the diagonal of `R` stored in `d`. `d` must be a one-dimensional vector with length at least `n`.
 
-##### `workVectorLength(m,n)`
-Returns the integer size of the required work vector to go along with m x n input matrix A. It's up to you to allocate a one-dimensional ndarray with this size and pass it to `triangularize`. This allows the Householder reflectors to be packed tightly without requiring as much as twice the required memory
-
-##### `multByQ( v, n, x )`
+##### `multByQ( A, x )`
+**Incomplete**
 Compute the product Q * x in-place, replacing x with Q * x. v is the result of the Householder triangularization, n is the width of the original matrix.
 
-##### `multByQinv( v, n, b )`
-Compute the product Q^-1 * x in-place, replacing b with Q^-1 * b. v is the result of the Householder triangularization.
+##### `multByQinv( A, x )`
+`A` is the in-place triangularized matrix. Compute the product `Q^-1 * x` in-place, replacing x with `Q^-1 * x`. Since the product is shorter than `x` for m > n, the entries of `x` from n+1 to m will be zero.
 
-##### `constructQ( Q, v )`
+##### `constructQ( A )`
 **Incomplete**
 Given a series of Householder reflectors, construct the matrix Q by applying the reflectors to a sequence of unit vectors.
 
@@ -73,12 +70,11 @@ Given a series of Householder reflectors, construct the matrix Q by applying the
 **Incomplete**
 Compute the in-place QR factorization of A, storing R in A and outputting Q in Q.
 
-##### `solve( R, v, b, x )`
+##### `solve( A, d, x )`
 Use the previously-calculated triangularization to find the vector x that minimizes the L-2 norm of (Ax - b). Note that the vector b is modified in the process.
-- `R` is an upper-triangular matrix calculated in the `triangularize` step. The dimensions must be at least n x n, so it's fine if the in-place factorized m x n matrix A is used.
-- `v` is the work vector that stores the householder reflectors.
-- `b` is the input vector of length m.
-- `x` is the output vector of length n.
+- `A` is the in-place triangularized matrix computed by `triangularize`
+- `d` is the diagonal of `R` computed by `triangularize`
+- `x` is the input vector of length m. The answer is computed in-place in the first n entries of `x`. The remaining entries are zero.
 
 
 ## Credits
