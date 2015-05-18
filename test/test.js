@@ -34,7 +34,11 @@ describe("Householder QR", function() {
     x = ndarray([0,1,2])
 
     A0 = vander(x,2)
-    A = vander(x,2)
+    var Acontent = vander(x,2)
+    A = pool.zeros([50,70,80]).pick(null,null,14).lo(7,19).hi(20,30).step(7,15)
+    blas.copy( Acontent, A )
+
+    //A = vander(x,2)
     Q = pool.zeros([m,m])
     Qreduced = pool.zeros([m,n])
     d = pool.zeros([n])
@@ -154,5 +158,79 @@ describe("Householder QR", function() {
 
   })
 
+
+})
+
+describe("Householder QR with complicated slices", function() {
+
+  var m,n,A,d,b,y,A0,x,Q,Qreduced
+
+  beforeEach(function() {
+    m=6
+    n=4
+    // I sat down and worked this example by hand, so I'm pretty confident in
+    // the numbers as long as they follow the algorithm....
+
+    x = ndarray([0,1,2,3,4,5])
+
+    A0 = vander(x,2)
+    var Acontent = vander(x,n)
+    A = pool.zeros([60,80,90]).pick(null,null,14).lo(15,19).step(8,10).hi(m,n)
+    blas.copy( Acontent, A )
+
+    Q = pool.zeros([m,m])
+    Qreduced = pool.zeros([m,n])
+    d = pool.zeros([14,3,12]).pick(3,2,null).lo(1).hi(n)
+    var bContent = ndarray([1,2,3,4,5,6])
+    b = pool.zeros([17,8,12]).pick(3,null,4).lo(2).hi(m)
+    blas.copy(bContent,b)
+    y = pool.zeros([n])
+  })
+
+  afterEach(function() {
+    pool.free(d)
+    pool.free(y)
+  })
+
+  describe("triangularize",function() {
+    beforeEach(function() {
+      householder.triangularize(A,d)
+    })
+
+    it('calculates the correct decomposition',function() {
+      var v1 = ndarray([1.187,   0.344,   0.344,   0.344,   0.344,   0.344])
+      var v2 = ndarray([-6.124,  -1.089,   0.049,   0.269,   0.488,   0.708])
+      var v3 = ndarray([-22.454,  20.916,  -1.268,  -0.521,  -0.305,   0.168])
+      var v4 = ndarray([-91.856,  99.563,  45.826,  -1.101,  -0.214,   0.861])
+
+      assert( ndtest.approximatelyEqual( v1, A.pick(null,0), 1e-3 ) )
+      assert( ndtest.approximatelyEqual( v2, A.pick(null,1), 1e-3 ) )
+      assert( ndtest.approximatelyEqual( v3, A.pick(null,2), 1e-3 ) )
+      assert( ndtest.approximatelyEqual( v4, A.pick(null,3), 1e-3 ) )
+    })
+
+  })
+
+  describe("multiplyByQinv()", function() {
+    it('calculates the correct product',function() {
+      var QinvbExpected = ndarray([-8.573,   4.183,   0.000,   0.000,   0.000,   0.000])
+      householder.triangularize(A,d)
+      householder.multiplyByQinv(A, b)
+      assert( ndtest.approximatelyEqual( QinvbExpected, b, 1e-3 ) )
+    })
+  })
+
+  describe("multiplyByQ()", function() {
+    it('calculates the correct product',function() {
+      var x = ndarray([-8.573,   4.183,   0.000,   0.000,   0.000,   0.000])
+      var QbExpected = ndarray([1,2,3,4,5,6])
+
+      householder.triangularize(A,d)
+      householder.multiplyByQ(A, x)
+
+      assert( ndtest.approximatelyEqual( QbExpected, x, 1e-3 ) )
+    })
+
+  })
 
 })
