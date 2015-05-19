@@ -178,8 +178,10 @@ describe("Householder QR with complicated slices", function() {
     A = pool.zeros([60,80,90]).pick(null,null,14).lo(15,19).step(8,10).hi(m,n)
     blas.copy( Acontent, A )
 
-    Q = pool.zeros([m,m])
-    Qreduced = pool.zeros([m,n])
+    var Qbase = pool.zeros([80,40])
+    Q = Qbase.lo(4,17).step(4,3).hi(m,m)
+    var QreducedBase = pool.zeros([17,22])
+    Qreduced = QreducedBase.lo(2,3).step(3,2).hi(m,n)
     d = pool.zeros([14,3,12]).pick(3,2,null).lo(1).hi(n)
     var bContent = ndarray([1,2,3,4,5,6])
     b = pool.zeros([17,8,12]).pick(3,null,4).lo(2).hi(m)
@@ -230,7 +232,38 @@ describe("Householder QR with complicated slices", function() {
 
       assert( ndtest.approximatelyEqual( QbExpected, x, 1e-3 ) )
     })
+  })
+
+  describe("constructQ()", function() {
+
+    beforeEach(function() {
+      householder.triangularize(A,d)
+    })
+
+    it('calculates Q for the full QR factorization',function(){
+      assert( householder.constructQ(A,Q) )
+      assert( ndtest.matrixOrthogonal(Q,1e-3) )
+    })
+
+    it('calculates Q for the reduced QR factorization',function(){
+      assert( householder.constructQ(A,Qreduced) )
+      assert( ndtest.matrixColsNormalized(Qreduced,1e-3) )
+      assert( ndtest.matrixColsAreOrthogonal(Qreduced,1e-3) )
+    })
+
 
   })
+
+  describe("solve()", function() {
+    it('calculates the right answer',function() {
+      var xExpected = ndarray([1,1,0,0,0,0])
+
+      householder.triangularize(A,d)
+      householder.solve(A,d,b)
+
+      assert( ndtest.approximatelyEqual( xExpected, b, 1e-4 ) )
+    })
+  })
+
 
 })
