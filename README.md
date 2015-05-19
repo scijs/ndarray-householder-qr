@@ -46,7 +46,7 @@ After this calculation, the factorization can be reused to solve for other input
 ```javascript
 var y2 = ndarray([2,3,4]);
 
-qr.solve( A, v, y2 );
+qr.solve( A, d, y2 );
 
 // result: y = ndarray([ 2, 1, 0 ]) --> y = 1 * x + 2
 ```
