@@ -25,9 +25,10 @@
   "devDependencies": {
     "chai": "*",
     "jshint": "*",
-    "microbench": "../microbench",
+    "microbench": "git+https://rreusser@github.com/rreusser/microbench.git",
     "mocha": "*",
     "ndarray": "^1.0.16",
+    "ndarray-blas-trsv": "^1.0.1",
     "ndarray-scratch": "^1.1.1",
     "ndarray-show": "^1.1.1",
     "ndarray-tests": "^1.1.3",
