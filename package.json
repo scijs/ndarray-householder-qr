@@ -11,7 +11,8 @@
   },
   "scripts": {
     "test": "mocha",
-    "lint": "jshint **.js"
+    "lint": "jshint **.js",
+    "bench": "node benchmarks/*.js"
   },
   "keywords": [
     "householder",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "chai": "*",
     "jshint": "*",
+    "microbench": "../microbench",
     "mocha": "*",
     "ndarray": "^1.0.16",
     "ndarray-scratch": "^1.1.1",
