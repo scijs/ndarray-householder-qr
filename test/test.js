@@ -51,9 +51,9 @@ describe("Householder QR", function() {
     pool.free(y)
   })
 
-  describe("triangularize",function() {
+  describe("factor",function() {
     beforeEach(function() {
-      householder.triangularize(A,d)
+      householder.factor(A,d)
     })
 
     it('calculates the correct Householder reflectors',function() {
@@ -73,14 +73,14 @@ describe("Householder QR", function() {
 
   describe("multiplyByQinv()", function() {
     it('succeeds',function() {
-      householder.triangularize(A,d)
+      householder.factor(A,d)
       assert( householder.multiplyByQinv(A, b) )
     })
 
     it('calculates the correct product',function() {
       var QinvbExpected = ndarray([-3.464, -1.414, 0])
 
-      householder.triangularize(A,d)
+      householder.factor(A,d)
       householder.multiplyByQinv(A, b)
 
       assert( ndtest.approximatelyEqual( QinvbExpected, b, 1e-3 ) )
@@ -90,7 +90,7 @@ describe("Householder QR", function() {
   describe("multiplyByQ()", function() {
 
     it('succeeds',function() {
-      householder.triangularize(A,d)
+      householder.factor(A,d)
       assert( householder.multiplyByQ(A, b) )
     })
 
@@ -98,7 +98,7 @@ describe("Householder QR", function() {
       var x = ndarray([-3.464, -1.414, 0])
       var QbExpected = ndarray([1,2,3])
 
-      householder.triangularize(A,d)
+      householder.factor(A,d)
       householder.multiplyByQ(A, x)
 
       assert( ndtest.approximatelyEqual( QbExpected, x, 1e-3 ) )
@@ -109,7 +109,7 @@ describe("Householder QR", function() {
   describe("constructQ()", function() {
 
     beforeEach(function() {
-      householder.triangularize(A,d)
+      householder.factor(A,d)
     })
 
     it('calculates Q for the full QR factorization',function(){
@@ -129,14 +129,14 @@ describe("Householder QR", function() {
 
   describe("solve()", function() {
     it('succeeds',function() {
-      assert( householder.triangularize(A,d) )
+      assert( householder.factor(A,d) )
       assert( householder.solve(A,d,b,y) )
     })
 
     it('calculates the right answer',function() {
       var xExpected = ndarray([1,1])
 
-      householder.triangularize(A,d)
+      householder.factor(A,d)
       householder.solve(A,d,b)
 
       assert( ndtest.approximatelyEqual( xExpected, b.hi(n), 1e-4 ) )
@@ -145,7 +145,7 @@ describe("Householder QR", function() {
     it('calculates the right answer when reused',function() {
       var xExpected = ndarray([1,1])
 
-      householder.triangularize(A,d)
+      householder.factor(A,d)
 
       var y1 = ndarray([1,2,3])
       var y2 = ndarray([1,2,3])
@@ -194,9 +194,9 @@ describe("Householder QR with complicated slices", function() {
     pool.free(y)
   })
 
-  describe("triangularize",function() {
+  describe("factor",function() {
     beforeEach(function() {
-      householder.triangularize(A,d)
+      householder.factor(A,d)
     })
 
     it('calculates the correct decomposition',function() {
@@ -216,7 +216,7 @@ describe("Householder QR with complicated slices", function() {
   describe("multiplyByQinv()", function() {
     it('calculates the correct product',function() {
       var QinvbExpected = ndarray([-8.573,   4.183,   0.000,   0.000,   0.000,   0.000])
-      householder.triangularize(A,d)
+      householder.factor(A,d)
       householder.multiplyByQinv(A, b)
       assert( ndtest.approximatelyEqual( QinvbExpected, b, 1e-3 ) )
     })
@@ -227,7 +227,7 @@ describe("Householder QR with complicated slices", function() {
       var x = ndarray([-8.573,   4.183,   0.000,   0.000,   0.000,   0.000])
       var QbExpected = ndarray([1,2,3,4,5,6])
 
-      householder.triangularize(A,d)
+      householder.factor(A,d)
       householder.multiplyByQ(A, x)
 
       assert( ndtest.approximatelyEqual( QbExpected, x, 1e-3 ) )
@@ -237,7 +237,7 @@ describe("Householder QR with complicated slices", function() {
   describe("constructQ()", function() {
 
     beforeEach(function() {
-      householder.triangularize(A,d)
+      householder.factor(A,d)
     })
 
     it('calculates Q for the full QR factorization',function(){
@@ -258,7 +258,7 @@ describe("Householder QR with complicated slices", function() {
     it('calculates the right answer',function() {
       var xExpected = ndarray([1,1,0,0,0,0])
 
-      householder.triangularize(A,d)
+      householder.factor(A,d)
       householder.solve(A,d,b)
 
       assert( ndtest.approximatelyEqual( xExpected, b, 1e-4 ) )

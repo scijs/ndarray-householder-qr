@@ -35,7 +35,7 @@ var qr = require('ndarray-householder-qr'),
     d = pool.zeros([n]),
     A = vander(x,n);
 
-qr.triangularize( A, d );
+qr.factor( A, d );
 qr.solve( A, d, y );
 
 // result: y = ndarray([ 1, 1, 0 ]) --> y = 1 * x + 1
@@ -54,7 +54,7 @@ qr.solve( A, v, y2 );
 
 ## Usage
 
-##### `triangularize( A, d )`
+##### `factor( A, d )`
 Computes the in-place triangularization of `A`, returning the Householder reflectors in the lower-triangular portion of `A` (including the diagonal) and `R` in the upper-triangular portion of `A` (excluding diagonal) with the diagonal of `R` stored in `d`. `d` must be a one-dimensional vector with length at least `n`.
 
 ##### `multByQ( A, x )`
@@ -72,8 +72,8 @@ Compute the in-place QR factorization of A, storing R in A and outputting Q in Q
 
 ##### `solve( A, d, x )`
 Use the previously-calculated triangularization to find the vector x that minimizes the L-2 norm of (Ax - b). Note that the vector b is modified in the process.
-- `A` is the in-place factored matrix computed by `triangularize`
-- `d` is the diagonal of `R` computed by `triangularize`
+- `A` is the in-place factored matrix computed by `factor`
+- `d` is the diagonal of `R` computed by `factor`
 - `x` is the input vector of length m. The answer is computed in-place in the first n entries of `x`. The remaining entries are zero.
 
 
