@@ -77,5 +77,12 @@ Use the previously-calculated triangularization to find the vector x that minimi
 - `x` is the input vector of length m. The answer is computed in-place in the first n entries of `x`. The remaining entries are zero.
 
 
+## Benchmarks
+
+```sh
+$ npm run bench
+```
+
+
 ## Credits
 (c) 2015 Ricky Reusser. MIT License

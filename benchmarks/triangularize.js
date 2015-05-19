@@ -10,6 +10,9 @@ var bench = require('microbench'),
 
 bench.usePlugin('clitable');
 
+bench.set('throwaway iterations', 200);
+bench.set('default iterations', 100);
+
 bench.category('QR factorization',function() {
 
   var m = 150,
