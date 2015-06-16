@@ -23,7 +23,7 @@ bench.category('QR factorization',function() {
   bench.fixtures('x', pool.zeros([n],'float64'))
   bench.fixtures('b', pool.zeros([m],'float64'))
   bench.fixtures('work', pool.zeros([qrv1.workVectorLength(m,n)],'float64'))
-  bench.fixtures('triv3',qrv3.triangularize)
+  bench.fixtures('triv3',qrv3.factor)
   bench.fixtures('triv2',qrv2.triangularize)
   bench.fixtures('triv1',qrv1.triangularize)
   bench.fixtures('solvev3',qrv3.solve)

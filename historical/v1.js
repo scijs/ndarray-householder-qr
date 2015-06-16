@@ -46,7 +46,7 @@ var triangularize = function triangularize( A, v ) {
     blas.scal( 1/nrm, x);
 
     // A[k:m,k:n] = A[k:n,k:n] - 2 * vk * (vk^* * A[k:m,k:n])
-    
+
     // Compute alpha = -2 * vk^* * A[k:m,k:n]:
     Akmkn = A.lo(k,k);
 
