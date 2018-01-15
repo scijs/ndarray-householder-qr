@@ -24,53 +24,49 @@ A straightforward example of the usefulness of QR factorization is the solution 
 
 ```javascript
 var qr = require('ndarray-householder-qr'),
-    vander = require('ndarray-vandermonde'),
+var vander = require('ndarray-vandermonde'),
     
-    m = 3,
-    n = 2,
+var m = 3,
+var n = 2,
 
-    x = ndarray([0,1,2]),   // independent variable
-    y = ndarray([1,2,3]),   // data points
+var x = ndarray([0,1,2]), // independent variable
+var y = ndarray([1,2,3]), // data points
 
-    d = pool.zeros([n]),
-    A = vander(x,n);
+var d = pool.zeros([n]),
+var A = vander(x, n);
 
-qr.factor( A, d );
-qr.solve( A, d, y );
+qr.factor(A, d);
+qr.solve(A, d, y);
 
-// result: y = ndarray([ 1, 1, 0 ]) --> y = 1 * x + 1
+// result: y = ndarray([1, 1, 0]) --> y = 1 * x + 1
 ```
 
 After this calculation, the factorization can be reused to solve for other inputs:
 
 ```javascript
-var y2 = ndarray([2,3,4]);
+var y2 = ndarray([2, 3, 4]);
 
-qr.solve( A, d, y2 );
+qr.solve(A, d, y2);
 
-// result: y = ndarray([ 2, 1, 0 ]) --> y = 1 * x + 2
+// result: y = ndarray([2, 1, 0]) --> y = 1 * x + 2
 ```
 
 
 ## Usage
 
-##### `factor( A, d )`
+##### `qr.factor( A, d )`
 Computes the in-place triangularization of `A`, returning the Householder reflectors in the lower-triangular portion of `A` (including the diagonal) and `R` in the upper-triangular portion of `A` (excluding diagonal) with the diagonal of `R` stored in `d`. `d` must be a one-dimensional vector with length at least `n`.
 
-##### `multByQ( A, x )`
+##### `qr.multiplyByQ(A, x)`
 Compute the product Q * x in-place, replacing x with Q * x. `A` is the in-place factored matrix.
 
-##### `multByQinv( A, x )`
+##### `qr.multiplyByQinv(A, x)`
 `A` is the in-place factored matrix. Compute the product `Q^-1 * x` in-place, replacing x with `Q^-1 * x`. Since the product is shorter than `x` for m > n, the entries of `x` from n+1 to m will be zero.
 
-##### `constructQ( A, Q )`
+##### `qr.constructQ(A, Q)`
 Given the in-place factored matrix A (diagonal not necessary), construct the matrix Q by applying the reflectors to a sequence of unit vectors. The dimensions of Q must be between m x n and m x m. When the dimensions of Q are m x n, Q corresponds to the Reduced QR Factorization. When the dimensions are m x m, Q corresponds to the Full QR Factorization.
 
-##### `factor( A, Q )`
-**Incomplete**
-Compute the in-place QR factorization of A, storing R in A and outputting Q in Q.
-
-##### `solve( A, d, x )`
+##### `qr.solve(A, d, x)`
 Use the previously-calculated triangularization to find the vector x that minimizes the L-2 norm of (Ax - b). Note that the vector b is modified in the process.
 - `A` is the in-place factored matrix computed by `factor`
 - `d` is the diagonal of `R` computed by `factor`
